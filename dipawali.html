@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Diwali Fireworks</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sacramento">
+    <style>
+        /* Basic styling */
+        body {
+            background-color: #212121;
+            font-family: 'Sacramento', cursive;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Center container */
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Title styling with color-cycling effect */
+        .title {
+            font-size: 5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            animation: colorCycle 3s infinite;
+            text-shadow: 0px 2px 1px orange, 0px 0px 6px orangered, 0px 5px 10px rgba(0, 0, 0, 1);
+        }
+
+        /* Fireworks styling */
+        .fireworks {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .fireworks li {
+            position: relative;
+            display: inline-block;
+            margin: 0 15px;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            background-color: #8d6e63;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.5);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .fireworks li::before,
+        .fireworks li::after {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: #212121;
+            border-radius: 50%;
+            top: -40%;
+        }
+
+        .fireworks li::before {
+            left: -30%;
+        }
+
+        .fireworks li::after {
+            right: -30%;
+        }
+
+        /* Firework sparks */
+        .fireworks li span {
+            display: inline-block;
+            height: 20px;
+            width: 20px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin: auto;
+            z-index: 1;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+            border-top-right-radius: 50px;
+            transform: rotate(45deg);
+            animation: fire 0.3s ease infinite;
+        }
+
+        /* Delays for each firework */
+        .fireworks li:nth-child(1) span { animation-delay: 0.5s; }
+        .fireworks li:nth-child(2) span { animation-delay: 1s; }
+        .fireworks li:nth-child(3) span { animation-delay: 1.5s; }
+        .fireworks li:nth-child(4) span { animation-delay: 2s; }
+        .fireworks li:nth-child(5) span { animation-delay: 2.5s; }
+        .fireworks li:nth-child(6) span { animation-delay: 3s; }
+
+        /* Background sparkles animation */
+        .sparkle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            animation: sparkle 1.5s infinite alternate;
+        }
+
+        /* Firecracker animation */
+        .firecracker {
+            position: absolute;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(to top, red, yellow);
+            border-radius: 2px;
+            animation: explode 1s ease-out infinite alternate;
+        }
+
+        /* Keyframes for firework spark animation */
+        @keyframes fire {
+            0%, 100% {
+                transform: rotate(55deg);
+                width: 20px;
+                background: linear-gradient(90deg, orange, orangered);
+            }
+            50% {
+                transform: rotate(35deg);
+                width: 18px;
+                background: linear-gradient(90deg, orangered, orange);
+            }
+        }
+
+        /* Color-cycling animation for title */
+        @keyframes colorCycle {
+            0% { color: #ffcc80; }
+            25% { color: #ffab91; }
+            50% { color: #ff8a80; }
+            75% { color: #ffcc80; }
+            100% { color: #ffab91; }
+        }
+
+        /* Pulsing glow animation for fireworks */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px 5px rgba(255, 87, 34, 0.5); }
+            100% { box-shadow: 0 0 20px 10px rgba(255, 87, 34, 0.9); }
+        }
+
+        /* Background sparkle animation */
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Firecracker explosion animation */
+        @keyframes explode {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+
+        /* Social links */
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 10px;
+            bottom: 100px;
+            gap: 15px;
+            z-index: 10000;
+        }
+
+        .meta-link {
+            align-items: center;
+            backdrop-filter: blur(3px);
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: inline-flex;
+            gap: 5px;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 600ms, border-color 600ms;
+        }
+
+        .meta-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .meta-link.instagram > span {
+            color: #ff70d2;
+        }
+
+        .meta-link.facebook > span {
+            color: #1877f2;
+          
+        }
+
+        /* Telegram button */
+        .telegram-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #0088cc;
+            padding: 10px 15px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+            z-index: 1000;
+        }
+
+        .telegram-button a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .telegram-button img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .telegram-button:hover {
+            background-color: #006aa8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="title">Happy Diwali from Rohan</div>
+        <ul class="fireworks">
+            <li><span></span></li>
+            <li><span></span></li>
+            <li><span></span></li>
+            <li><span></span></li>
+            <li><span></span></li>
+            <li><span></span></li>
+        </ul>
+    </div>
+
+    <!-- Background sparkles (lights) -->
+    <div class="background">
+        <!-- Adding 50 sparkles randomly positioned -->
+        <script>
+            for (let i = 0; i < 50; i++) {
+                let sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.top = `${Math.random() * 100}vh`;
+                sparkle.style.left = `${Math.random() * 100}vw`;
+                document.body.appendChild(sparkle);
+            }
+        </script>
+    </div>
+
+    <!-- Social links -->
+    <div class="social-links">
+        <a class="meta-link instagram" href="https://www.instagram.com/manjeet_0129" target="Instagram">
+            <span>follow me on Instagram</span>
+        </a>
+        <a class="meta-link facebook" href="https://www.facebook.com/profile.php?id=100053891445536" target="Facebook<">
+             <span>follow me on Facebook</span>
+        </a>
+    </div>
+
+    <!-- Telegram button -->
+    <div class="telegram-button">
+        <a href="https://t.me/MAST_KIDS" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
+            <span>Join Us on Telegram</span>
+        </a>
+    </div>
+
+</body>
+</html>
+f

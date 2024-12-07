@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket Management System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    /* Base Styles */
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom right, #2193b0, #6dd5ed);
+        margin: 0;
+        padding: 0;
+    }
+
+    .background-img {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 500px;
+        margin: 50px auto;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    h2, h3 {
+        text-align: center;
+        color: #333;
+    }
+
+    .ticket-section input, 
+    .ticket-section button {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+    .ticket-section input:focus {
+        border-color: #6dd5ed;
+        box-shadow: 0 0 5px rgba(33, 147, 176, 0.5);
+    }
+
+    input[type="submit"], #view-history-btn {
+        background: linear-gradient(to right, #00c6ff, #0072ff);
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover, 
+    #view-history-btn:hover {
+        background: linear-gradient(to right, #0072ff, #00c6ff);
+    }
+
+    #ticket-history {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        text-align: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background: linear-gradient(to right, #0072ff, #00c6ff);
+        color: white;
+    }
+
+    td {
+        background: #f9f9f9;
+    }
+
+    .delete-btn {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .delete-btn:hover {
+        background: #ff4747;
+    }
+
+    .icon-container {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .icon-container i {
+        font-size: 20px;
+        margin: 0 10px;
+        color: #0072ff;
+        transition: transform 0.3s;
+    }
+
+    .icon-container i:hover {
+        transform: scale(1.3);
+    }
+</style>
+</head>
+<body>
+
+<div class="background-img">
+    <div class="ticket-section">
+        <form id="ticket-form">
+            <h2>Ticket Management System</h2>
+            <input type="text" id="name" placeholder="Name" required><br>
+            <input type="text" id="seat" placeholder="Seat No" required><br>
+            <input type="date" id="date" required><br>
+            <input type="text" id="from" placeholder="From Location" required><br>
+            <input type="text" id="to" placeholder="To Location" required><br>
+            <input type="submit" value="Book Ticket">
+        </form>
+        <button id="view-history-btn">View History</button>
+        <div class="icon-container">
+            <i class="fas fa-bus"></i>
+            <i class="fas fa-train"></i>
+            <i class="fas fa-plane"></i>
+        </div>
+    </div>
+</div>
+
+<div id="ticket-history" style="display: none;">
+    <h3>Ticket History</h3>
+    <table id="history-table">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Ticket ID</th>
+                <th onclick="sortTable(1)">Name</th>
+                <th onclick="sortTable(2)">Seat No</th>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="history-table-body">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Form Submission Handler
+    document.getElementById("ticket-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        // Get Form Values
+        const name = document.getElementById("name").value;
+        const seat = document.getElementById("seat").value;
+        const date = document.getElementById("date").value;
+        const from = document.getElementById("from").value;
+        const to = document.getElementById("to").value;
+
+        // Generate Ticket ID
+        const ticketId = "T" + Math.floor(Math.random() * 10000);
+
+        // Append Ticket to Table
+        const tableBody = document.getElementById("history-table-body");
+        const newRow = tableBody.insertRow();
+        newRow.innerHTML = `<td>${ticketId}</td><td>${name}</td><td>${seat}</td><td>${date}</td><td>${from}</td><td>${to}</td><td><button class="delete-btn">Delete</button></td>`;
+
+        // Success Message
+        alert(`Ticket with ID ${ticketId} has been booked.`);
+        document.getElementById("ticket-form").reset();
+    });
+
+    // Show History
+    document.getElementById("view-history-btn").addEventListener("click", function() {
+        document.getElementById("ticket-history").style.display = "block";
+    });
+
+    // Delete Ticket
+    document.getElementById("ticket-history").addEventListener("click", function(event) {
+        if (event.target.classList.contains("delete-btn")) {
+            const row = event.target.closest("tr");
+            row.remove();
+        }
+    });
+
+    // Sorting Functionality
+    function sortTable(columnIndex) {
+        const table = document.getElementById("history-table");
+        const rows = Array.from(table.rows).slice(1);
+        rows.sort((row1, row2) => row1.cells[columnIndex].innerText.localeCompare(row2.cells[columnIndex].innerText));
+        rows.forEach(row => table.appendChild(row));
+    }
+</script>
+
+</body>
+</html>

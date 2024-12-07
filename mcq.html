@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz with Timer and Prize</title>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 1rem;
+            color: orange;
+            background-color: #000033;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+        .quiz, .choices {
+            list-style-type: none;
+            padding: 0;
+        }
+        .choices li {
+            margin-bottom: 5px;
+        }
+        .choices label {
+            display: flex;
+            align-items: center;
+            color: orange;
+            transition: transform 0.3s;
+        }
+        .choices label:hover {
+            transform: scale(1.05);
+        }
+        input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .button {
+            padding: 1rem;
+            cursor: pointer;
+            font-size: inherit;
+            color: black;
+            background: orange;
+            border-radius: 8px;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background: #ffcc00;
+        }
+        .my-results, .timer, .prize {
+            padding: 1rem;
+            border: 1px solid goldenrod;
+            margin-top: 10px;
+            color: orange;
+            text-align: center;
+        }
+        h4 {
+            color: orange;
+        }
+        /* Progress Bar */
+        #progressBar {
+            width: 100%;
+            height: 10px;
+            background: #444;
+            margin-top: 10px;
+        }
+        #progress {
+            height: 100%;
+            background: orange;
+            width: 0%;
+        }
+        /* Background Animation */
+        @keyframes rotateStars {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px);
+            background-size: 550px 550px;
+            animation: rotateStars 300s linear infinite;
+            z-index: -1;
+        }
+        .quiz, .choices, .button, .my-results, .timer, .prize {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="quizContainer">
+        <ul class="quiz">
+            <li>
+                <h4>How many letters are there in "JS"?</h4>
+                <ul class="choices">
+                    <li>
+                        <label><input type="radio" name="question0" value="A" /><span>2</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question0" value="B" /><span>1</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question0" value="C" /><span>3</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question0" value="D" /><span>4</span></label>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <h4>How many letters are there in "BMX"?</h4>
+                <ul class="choices">
+                    <li>
+                        <label><input type="radio" name="question1" value="A" /><span>2</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question1" value="B" /><span>1</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question1" value="C" /><span>3</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question1" value="D" /><span>4</span></label>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <h4>How many letters are there in "A"?</h4>
+                <ul class="choices">
+                    <li>
+                        <label><input type="radio" name="question2" value="A" /><span>2</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question2" value="B" /><span>1</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question2" value="C" /><span>3</span></label>
+                    </li>
+                    <li>
+                        <label><input type="radio" name="question2" value="D" /><span>4</span></label>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <button id="quizButton" class="button" onclick="startQuiz()">Start Quiz</button>
+        <div id="progressBar">
+            <div id="progress"></div>
+        </div>
+        <span id="myresults" class="my-results">Your results will appear here</span>
+        <span id="prize" class="prize">Your current prize is £0</span>
+        <span id="timer" class="timer">Time left: 45 seconds</span>
+    </div>
+
+    <script>
+        var answers = ["A", "C", "B"], tot = answers.length;
+        var currentQuestion = 0;
+        var prize = 0;
+        var timer;
+        var timeLeft = 45;
+
+        function startTimer() {
+            document.getElementById('timer').innerHTML = "Time left: " + timeLeft + " seconds";
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('timer').innerHTML = "Time left: " + timeLeft + " seconds";
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert("Time's up! Moving to next question.");
+                    checkAnswer(false);  // Move to next question if time's up without penalizing
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 45;
+            startTimer();
+        }
+
+        function getCheckedValue(radioName) {
+            var radios = document.getElementsByName(radioName);
+            for (var y = 0; y < radios.length; y++) {
+                if (radios[y].checked) return radios[y].value;
+            }
+            return null;
+        }
+
+        function checkAnswer(clicked) {
+            clearInterval(timer);  // Stop the timer when the user answers
+
+            var userAnswer = getCheckedValue("question" + currentQuestion);
+            if (!userAnswer && clicked) {
+                alert("Please select an answer.");
+                return;
+            }
+
+            var currentPrize = 0;
+            if (currentQuestion === 0) currentPrize = 100;
+            else if (currentQuestion === 1) currentPrize = 1000;
+            else if (currentQuestion === 2) currentPrize = 10000;
+
+            if (userAnswer === answers[currentQuestion]) {
+                prize += currentPrize;
+                alert("Correct! You win £" + currentPrize + " for this question!");
+            } else if (userAnswer !== answers[currentQuestion] && clicked) {
+                prize -= prize * 0.25;  // Deduct 1/4 of the prize
+                alert("Wrong! You lose 1/4 of your total prize. Your new prize is £" + prize);
+            }
+
+            document.getElementById("prize").innerHTML = "Your current prize is £" + prize;
+            currentQuestion++;
+
+            // Update progress bar
+            document.getElementById('progress').style.width = (currentQuestion / tot * 100) + '%';
+
+            if (currentQuestion < tot) {
+                resetTimer();  // Move to the next question with timer
+            } else {
+                document.getElementById("myresults").innerHTML = "Quiz finished! Your total prize is £" + prize;
+                document.getElementById("timer").innerHTML = "Quiz complete.";
+                document.getElementById("prize").innerHTML = "Final prize: £" + prize;
+                document.getElementById("quizButton").style.display = "none";  // Hide the button at the end
+            }
+        }
+
+        function startQuiz() {
+            document.getElementById('myresults').innerHTML = '';
+            currentQuestion = 0;
+            prize = 0;
+            document.getElementById('progress').style.width = '0%'; // Reset progress bar
+
+            // Change "Start Quiz" button into "Submit" button
+            var quizButton = document.getElementById("quizButton");
+            quizButton.innerHTML = "Submit";
+            quizButton.setAttribute("onclick", "checkAnswer(true)");
+            resetTimer();
+        }
+    </script>
+</body>
+</html>

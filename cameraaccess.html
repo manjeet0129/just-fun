@@ -1,0 +1,42 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+  <title>Camera Access</title>  
+  <style>  
+   #video {  
+    border: 1px solid black;  
+   }  
+  </style>  
+</head>  
+<body>  
+  <button id="open-camera-btn">Open Camera</button>  
+  <button id="close-camera-btn">Close Camera</button>  
+  <video id="video" width="640" height="480"></video>  
+  
+  <script>  
+   const openCameraBtn = document.getElementById('open-camera-btn');  
+   const closeCameraBtn = document.getElementById('close-camera-btn');  
+   const video = document.getElementById('video');  
+  
+   let stream;  
+  
+   openCameraBtn.addEventListener('click', async () => {  
+    try {  
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });  
+      video.srcObject = stream;  
+      video.play();  
+    } catch (error) {  
+      console.error('Error opening camera:', error);  
+    }  
+   });  
+  
+   closeCameraBtn.addEventListener('click', () => {  
+    if (stream) {  
+      stream.getTracks().forEach(track => track.stop());  
+      video.srcObject = null;  
+    }  
+   });  
+  </script>  
+</body>  
+</html>
+
